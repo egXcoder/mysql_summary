@@ -7,6 +7,7 @@
 ## MYSQL is ( Relational Database )
 1. [Storage_engines](#1-Storage_engines)
 1. [Data_Types](#2-data_types)
+1. [Functional_Dependecy](#3-Functional-Dependency) 
    
 ## 1. Storage_engines :
 
@@ -81,3 +82,52 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
   * Date: YYYY-MM-DD
   * TimeStamp: YYYY MM DD HH:MM:SS from 1970 to 2038 (best pracice)
   * DateTime: YYYY-MM-DD HH:MM:SS from 1000 to 9999
+
+## 3. Functional Dependency:
+A column is dependent on another one if one value can be used to determine the value of another
+Example:first Name is dependent on id , since by id we can determine value of firstName
+
+### **Foreign Key in pracice**
+Adding foreign key to make products.category to point to categories.id
+
+Categories Table
+| id  | name     |
+| --- | -------- |
+| 1   | phones   |
+| 2   | laptops  |
+| 3   | clothes  |
+| 4   | machines |
+
+Products Table
+
+| id  | name           | description | price | category | image | created_date |
+| --- | -------------- | ----------- | ----- | -------- | ----- | ------------ |
+| 1   | oppo phone     |             | 100$  | 1        |       |              |
+|     | toshiba laptop |             | 500$  | 2        |       |              |
+|     | watch          |             | 50$   | 4        |       |              |
+|     | samsung phone  |             | 150$  | 1        |       |              |
+
+* ### adding index to products.category column
+   
+    <img src="images/foreign_key_1.png" />
+
+* ### click on relation view
+    
+    <img src="images/foreign_key_2.png" />
+
+* ### make products.category column point to categories.id
+
+    <img src="images/foreign_key_3.png" />
+
+* ### Restrict: 
+    means if we want to remove a category from the categories Table, it won't allow removal because there is a product pointing to it
+
+* ### Cascade:
+     means if we want to remove a category from the categories Table, it will remove all the products pointing to this category
+
+* ### Null:
+  means if we want to remove a category from the categories Table,it will reset the value of product.category which point to parent category with null
+
+* ### No actions:
+  means if we want to remove a category from the categories Table,nothing will happen in products table even if there are some pointing to parent category
+
