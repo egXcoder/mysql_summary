@@ -5,8 +5,9 @@
 
 ---
 ## MYSQL is ( Relational Database )
-1. [Storage_engines](#storage_engines)
-1. [Data_Types](#data_type)
+1. [Storage_engines](#1-Storage_engines)
+1. [Data_Types](#2-data_types)
+   
 ## 1. Storage_engines :
 
 > is what mysql uses to store, handle and retreive data and there are many supported .. you can see the supported one from "SHOW ENGINES" query
@@ -53,6 +54,30 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
 ## 2. Data_Types
 
 * ###  Numerical :
+  * INT: Normal Sized Integer width up to 11 digits
+  * INT(3): allocate memory for 3 bytes but inserting value which is bigger,SQL will try to get more memory from the system.
+  * TinyInt:very small int -127 to 127
+  * SmallInt:-32k to 32k
+  * MediumInt:-8M to 8M
+  * BigInt:up to 20 digits
+  * Float .. estimated percetion with large number 1.5e5
+  * Double..estimated percition with digits such 1.56214 (best practice for digits)
+  * Decimal(5,2)..number is 5 length with 2 numbers after digit...used with math operation for perfect percetion.
+
+
 > unsigned  means don't allow negatives while signed allow negative and positive (signed is the default) it can be put before any datatype
 
 
+* ### String:
+  * CHAR: is a fixed length string
+  * VARCHAR(length):Variable length of string with specific length
+  * TEXT is good:
+    * If you need to store large texts in your database
+    * If you do not search on the value of the column
+    * If you select this column rarely and do not join on it.
+     <br>Some examples of what TEXT is good for: Blog comments , Page Reviews , Content Description
+
+* ### Date and Time:
+  * Date: YYYY-MM-DD
+  * TimeStamp: YYYY MM DD HH:MM:SS from 1970 to 2038 (best pracice)
+  * DateTime: YYYY-MM-DD HH:MM:SS from 1000 to 9999
