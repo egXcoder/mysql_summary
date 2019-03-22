@@ -163,6 +163,7 @@ Products Table
 
 ## 5. Queries:
 **users Table**
+
 | id  | first_name | last_name | age |
 | --- | ---------- | --------- | --- |
 | 1   | ahmed      | ibrahim   | 24  |
@@ -223,7 +224,8 @@ output
 SELECT id,first_name AS name FROM users 
 WHERE age>=30 AND last_name LIKE 'm%';
 ```
-output 
+output
+ 
 | id  | name |
 | --- | ---- |
 | 4   | john |
