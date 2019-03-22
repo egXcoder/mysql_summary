@@ -7,8 +7,9 @@
 ## MYSQL is ( Relational Database )
 1. [Storage_engines](#1-Storage_engines)
 1. [Data_Types](#2-data_types)
-1. [Functional_Dependecy](#3-Functional-Dependency) 
-1. [Normalization](#4-Normalization) 
+1. [Foreign Key](#3-Foreign-Key) 
+1. [Database Design](#4-Database-Design) 
+1. [Relations](#5-Relations) 
    
 ## 1. Storage_engines :
 
@@ -84,9 +85,8 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
   * TimeStamp: YYYY MM DD HH:MM:SS from 1970 to 2038 (best pracice)
   * DateTime: YYYY-MM-DD HH:MM:SS from 1000 to 9999
 
-## 3. Functional Dependency:
-A column is dependent on another one if one value can be used to determine the value of another
-Example:first Name is dependent on id , since by id we can determine value of firstName
+## 3. Foreign Key:
+A column is dependent on another one if one value can be used to determine the value of another,in another meaning if one value in column1 changes it will lead to a change in the value in column 2 as long as column1 points to column2 
 
 ### **Foreign Key in pracice**
 Adding foreign key to make products.category to point to categories.id
@@ -133,8 +133,9 @@ Products Table
 * ### No actions:
   means if we want to remove a category from the categories Table,nothing will happen in products table even if there are some pointing to parent category
 
-## 4. Normalization:
- 
+## 4. Database Design
+
+ **Normalization:**
  is the process of organizing the fields and tables to minimize redudancy and control dependency.
 
  we can normalize data by three filters (normal forms)
@@ -184,6 +185,22 @@ the fix is to create another table for category Table and make a foreign key bet
 | 3          | Lean Startup        | 3           |     |     | 3   | Books    | inspiring books          |
 | 4          | Toshiba L755        | 2           |     |     | 4   | PC       | personal computers       |
 
+* ### Data Integrity:
+    is to make sure that database has the right design to store data to remove redundance 
+    for example:
+    users(table) -> id,name,mail,address (columns) ... (there shouldn't be two same mails in the table) ... so we make sure that mail column is unique
+
+    * **Entity Integrity:** 
+    Every row should have a primary key to distinguish rows from each other
+
+    * **Referential inegrity:**
+    this in summary is the usage of foreign keys by referencing column in a table with another table.column and do yours constrains (Restricted,Cascade,Null,No Action)
+
+    * **Domain integrity:**
+    using right data types for right expected data.
+
+
+
 * ### Common Design Mistakes
 
   * Tables with many field that don't relate to eachother
@@ -207,3 +224,25 @@ the fix is to create another table for category Table and make a foreign key bet
     * reviews
   
   * normalize the database by finding relations between tables
+
+
+## 5.Relations:
+
+* ### one to many relation:
+    **one parent can have many child** <br><br>
+    **for example one category(parent) can have many products(child),its like the implementaion above.**
+<img src="images/one-to-many.png" />
+
+
+* ### one to one relation:
+    **one parent can have only one child** <br><br>
+    **if for some reason you wanted that one category(parent) should have only one product(child), we can do that in implementation above but with little addition that we should product.category be unique, so that no category should ever be repeated**
+<img src="images/one-to-one.png" />
+
+
+* ### many to many relation:
+  **one child can have many parent** <br><br>
+**if for some reason you wanted that one product(child) can have many categories(parent), implemetation now is much different, the implementation now is to create another table 'Product_categories' Table . this implementation is universal,in another meaning by playing with unique attribute for columns,we can change the relations from one to one, one to many, many to many**
+<img src="images/many-to-many.png" />
+
+
