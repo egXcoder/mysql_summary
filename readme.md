@@ -1,16 +1,21 @@
-# Some Notes of MYSQL
+# MYSQL As ( Relational Database )
+<img height="250px"  src="images/mysql2.png"/>
+<br><br>
 
-## DBMS : Database Management System
+### DBMS : Database Management System
 > the technology of storing and retrieving users’ data with utmost efficiency for example MYSQL, PostegreSQL, SqlLite, MariaDb, SAP, Oracle ... and so on
-
----
-## MYSQL is ( Relational Database )
+<br><br>
 1. [Storage_engines](#1-Storage_engines)
-1. [Data_Types](#2-data_types)
-1. [Foreign Key](#3-Foreign-Key) 
-1. [Database Design](#4-Database-Design) 
-1. [Relations](#5-Relations) 
-   
+2. [Data_Types](#2-data_types)
+3. [Foreign Key](#3-Foreign-Key) 
+4. [Relations](#4-Relations) 
+5. [Queries](#5-queries) 
+6. [Database Design](#6-Database-Design) 
+
+
+
+
+
 ## 1. Storage_engines :
 
 > is what mysql uses to store, handle and retreive data and there are many supported .. you can see the supported one from "SHOW ENGINES" query
@@ -133,7 +138,214 @@ Products Table
 * ### No actions:
   means if we want to remove a category from the categories Table,nothing will happen in products table even if there are some pointing to parent category
 
-## 4. Database Design
+
+## 4. Relations:
+
+* ### one to many relation:
+    **one parent can have many child** <br><br>
+    **for example one category(parent) can have many products(child),its like the implementaion above.**
+<img src="images/one-to-many.png" />
+
+
+* ### one to one relation:
+    **one parent can have only one child** <br><br>
+    **if for some reason you wanted that one category(parent) should have only one product(child), we can do that in implementation above but with little addition that we should product.category be unique, so that no category should ever be repeated**
+<img src="images/one-to-one.png" />
+
+
+* ### many to many relation:
+  **one child can have many parent** <br><br>
+**if for some reason you wanted that one product(child) can have many categories(parent), implemetation now is much different, the implementation now is to create another table 'Product_categories' Table . this implementation is universal,in another meaning by playing with unique attribute for columns,we can change the relations from one to one, one to many, many to many**
+<img src="images/many-to-many.png" />
+
+
+
+
+## 5. Queries:
+**users Table**
+| id  | first_name | last_name | age |
+| --- | ---------- | --------- | --- |
+| 1   | ahmed      | ibrahim   | 24  |
+| 2   | mohamed    | reda      | 20  |
+| 3   | alaa       | mohamed   | 20  |
+| 4   | john       | michael   | 40  |
+| 5   | ahmed      | ali       | 31  |
+| 6   | mohamed    | ismail    | 35  |
+
+<br>
+
+```SQL
+/*          --- LIMIT  ---
+ 
+LIMIT n
+n : how many records should be got
+
+LIMIT n1, n2
+n1 : starting index
+n2 : number of record/data you want to show
+ID
+1 -- index of the first record is zero.
+2
+3
+4
+5
+6
+
+LIMIT 0, 3
+-- the result will be ID: 1,2,3
+LIMIT 2, 3 
+-- the result will be ID: 3,4,5
+
+*/
+SELECT age,first_name FROM users 
+WHERE age>30
+ORDER BY age DESC
+LIMIT 2; 
+```
+output
+
+| age | first_name |
+| --- | ---------- |
+| 40  | john       |
+| 35  | mohamed    |
+
+<hr>
+
+```SQL
+/*              ---  LIKE KEYWORD  ---
+    WHERE column LIKE 'a%' .. start with a
+                     '%a'...end with a
+                     '%or%'.....have or in any position
+                     '_r%'  .... r in second position
+                     'a%o' ... start with a ends with 0
+*/
+
+SELECT id,first_name AS name FROM users 
+WHERE age>=30 AND last_name LIKE 'm%';
+```
+output 
+| id  | name |
+| --- | ---- |
+| 4   | john |
+
+<hr>
+
+```SQL
+select u.id , u.first_name,u.age from users u
+Where u.age<30
+ORDER BY age DESC,first_name ASC;
+```
+output
+
+| id  | first_name | age |
+| --- | ---------- | --- |
+| 1   | ahmed      | 24  |
+| 2   | alaa       | 20  |
+| 3   | mohamed    | 20  |
+<hr>
+
+```SQL
+/*   --- UNION ---
+displaying two results in one column 
+UNION don't allow duplicated results
+if you want duplications use UNION ALL 
+*/
+
+SELECT first_name FROM users
+UNION
+SELECT last_name FROM users;
+```
+output
+
+| first_name |
+|------------|
+| ahmed      |
+| mohamed    |
+| alaa       |
+| john       |
+| ibrahim    |
+| reda       |
+| michael    |
+| ali        |
+| ismail     |
+
+<hr>
+
+```SQL
+/*   --- GROUP_CONCAT()  ---
+displaying one signal value having all first_name
+ separated from each other by ;
+ since we used DISTINCT keyword so no duplication  
+*/
+
+SELECT 
+GROUP_CONCAT(DISTINCT first_name ORDER BY id) AS first_name
+FROM users;
+```
+output 
+
+| first_name              |
+|-------------------------|
+| ahmed;mohamed;alaa;john |
+
+<hr>
+
+```SQL
+/*     --- GROUP_CONCAT()  ---
+ displaying one signal value having all selcted records
+ separated from each other by ,  
+*/
+
+SELECT GROUP_CONCAT(
+CONCAT(first_name, " ", last_name, " #", age)
+where age>30
+ORDER BY id 
+SEPARATOR "," ) AS full_info 
+FROM users;
+
+```
+output 
+
+| full_info                                           |
+|-----------------------------------------------------|
+| john michael #40,ahmed ali #31,mohamed ismail #35 |
+
+<hr>
+customers table
+
+| id  | name | email      |
+| --- | ---- | ---------- |
+| 1   | john | john-email |
+| 2   | john | john-email |
+| 3   | fred | john-email |
+| 4   | fred | fred-email |
+| 5   | sam  | sam-email  |
+| 6   | sam  | sam-email  |
+
+```SQL
+/*    --- GROUP BY  ---
+   get how many duplications happens by 
+   both name and email at same time
+   with condition that duplications>1
+*/
+/* functions after select work on duplications occurrences */
+SELECT name,email,COUNT(*) AS count_of
+FROM customers
+GROUP BY name email
+HAVING COUNT(*)>1;
+```
+
+output
+
+| name | email      | count_of |
+| ---- | ---------- | -------- |
+| john | john-email | 2        |
+| sam  | sam-email  | 2        |
+
+
+
+
+## 6. Database Design
 
  **Normalization:**
  is the process of organizing the fields and tables to minimize redudancy and control dependency.
@@ -224,25 +436,4 @@ the fix is to create another table for category Table and make a foreign key bet
     * reviews
   
   * normalize the database by finding relations between tables
-
-
-## 5.Relations:
-
-* ### one to many relation:
-    **one parent can have many child** <br><br>
-    **for example one category(parent) can have many products(child),its like the implementaion above.**
-<img src="images/one-to-many.png" />
-
-
-* ### one to one relation:
-    **one parent can have only one child** <br><br>
-    **if for some reason you wanted that one category(parent) should have only one product(child), we can do that in implementation above but with little addition that we should product.category be unique, so that no category should ever be repeated**
-<img src="images/one-to-one.png" />
-
-
-* ### many to many relation:
-  **one child can have many parent** <br><br>
-**if for some reason you wanted that one product(child) can have many categories(parent), implemetation now is much different, the implementation now is to create another table 'Product_categories' Table . this implementation is universal,in another meaning by playing with unique attribute for columns,we can change the relations from one to one, one to many, many to many**
-<img src="images/many-to-many.png" />
-
 
