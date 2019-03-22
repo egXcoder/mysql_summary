@@ -8,6 +8,7 @@
 1. [Storage_engines](#1-Storage_engines)
 1. [Data_Types](#2-data_types)
 1. [Functional_Dependecy](#3-Functional-Dependency) 
+1. [Normalization](#4-Normalization) 
    
 ## 1. Storage_engines :
 
@@ -44,12 +45,12 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
     * it has foreign key functionality which is advantage
   
 
-<br><img src="https://i.ibb.co/GxNTFg7/foreign-Key-intro.png" alt="foreignKey_intro"/>
+      <br><img src="images/foreignKey_intro.png"/>
 
-* Activity.winner is pointing to Student_ID,
-* Every entry in activity.winner should exist in Student_ID otherwise it won't allow this entry
-* Student_ID and Activity.winner should have the same DataType 
-* If we removed S1 then the record in activity which point to S1 will be removed also automatically 
+      * Activity.winner is pointing to Student_ID,
+      * Every entry in activity.winner should exist in Student_ID otherwise it won't allow this entry
+      * Student_ID and Activity.winner should have the same DataType 
+      * If we removed S1 then the record in activity which point to S1 will be removed also automatically 
 
 
 ## 2. Data_Types
@@ -63,10 +64,10 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
   * BigInt:up to 20 digits
   * Float .. estimated percetion with large number 1.5e5
   * Double..estimated percition with digits such 1.56214 (best practice for digits)
-  * Decimal(5,2)..number is 5 length with 2 numbers after digit...used with math operation for perfect percetion.
+  * Decimal(5,2)..number is 5 length with 2 numbers after digit...used with math operation for perfect percetion.<br><br>
 
 
-> unsigned  means don't allow negatives while signed allow negative and positive (signed is the default) it can be put before any datatype
+   > unsigned  means don't allow negatives while signed allow  negative and positive (signed is the default) it can be put before any datatype
 
 
 * ### String:
@@ -91,6 +92,7 @@ Example:first Name is dependent on id , since by id we can determine value of fi
 Adding foreign key to make products.category to point to categories.id
 
 Categories Table
+
 | id  | name     |
 | --- | -------- |
 | 1   | phones   |
@@ -119,7 +121,7 @@ Products Table
 
     <img src="images/foreign_key_3.png" />
 
-* ### Restrict: 
+* ### Restrict:
     means if we want to remove a category from the categories Table, it won't allow removal because there is a product pointing to it
 
 * ### Cascade:
@@ -131,3 +133,77 @@ Products Table
 * ### No actions:
   means if we want to remove a category from the categories Table,nothing will happen in products table even if there are some pointing to parent category
 
+## 4. Normalization:
+ 
+ is the process of organizing the fields and tables to minimize redudancy and control dependency.
+
+ we can normalize data by three filters (normal forms)
+
+* **1NF:** every column should represents single attribute (don't have multiply value in single column) for example the below table breaks 1NF
+  
+| user_id | user_name             |
+| ------- | --------------------- |
+| 1       | ahmed,mohamed,ibrahim |
+| 2       | alaa                  |
+| 3       | sarah,nadia           |
+| 4       | john                  |
+
+<br>
+<br>
+
+* **2NF:** all columns inside a table should depend on the pk, if a column is partial depend on one PK but not the other such in in the below table (product_description) (its better place is in product table)
+notice:2 PK in one table is called (Composite Key)
+
+users Table , product_table and orders_table 
+
+| user_id | user_name |     |     | product_id | product_name |     |     | id  | user_id | product_id | product_description     |
+| ------- | --------- | --- | --- | ---------- | ------------ | --- | --- | --- | ------- | ---------- | ----------------------- |
+| 1       | ahmed     |     |     | 1          | watch        |     |     | 1   | 1       | 1          | its samsung smart watch |
+| 2       | alaa      |     |     | 2          | perfum       |     |     | 2   | 1       | 2          | exciting perfum         |
+| 3       | sarah     |     |     | 3          | book         |     |     | 3   | 3       | 2          | exciting perfum         |
+| 4       | john      |     |     | 4          | PC           |     |     | 4   | 4       | 2          | exciting perfum         |
+
+<br>
+<br> 
+
+* **3NF:** if column depend on another column in the table, its better to break it to another table and make your references., in the below table category_description depends on category column,so itsn't belong to this table
+
+| product_id | product_name        | category | category_description     |
+| ---------- | ------------------- | -------- | ------------------------ |
+| 1          | samsung smart watch | watches  | a very effecient watches |
+| 2          | dell inspiron 5570  | Laptops  | high performance laptops |
+| 3          | Lean Startup        | Books    | inspiring books          |
+| 4          | Toshiba L755        | Laptops  | high performance laptops |
+
+the fix is to create another table for category Table and make a foreign key between products.category_id to category.id
+
+| product_id | product_name        | Category_id |     |     | id  | category | category_description     |
+| ---------- | ------------------- | ----------- | --- | --- | --- | -------- | ------------------------ |
+| 1          | samsung smart watch | 1           |     |     | 1   | watches  | a very effecient watches |
+| 2          | dell inspiron 5570  | 2           |     |     | 2   | Laptops  | high performance laptops |
+| 3          | Lean Startup        | 3           |     |     | 3   | Books    | inspiring books          |
+| 4          | Toshiba L755        | 2           |     |     | 4   | PC       | personal computers       |
+
+* ### Common Design Mistakes
+
+  * Tables with many field that don't relate to eachother
+  * Too many tables with similar data
+  * repeated rows (thats why we use primary key)
+  * using comma separated value in a column
+  * poor naming conventions
+  * non-normalized data
+
+* ### Database Design Process:
+  * define the purpose of the database, we want create db for website that will
+    * sell products which can be categorized
+    * create customer accounts
+    * allow customers to create reviews for products
+    * provide basic content management system for static pages
+
+  * now determine your table names,and column_ids and use name conventions on it
+    * product_categories
+    * products
+    * customers
+    * reviews
+  
+  * normalize the database by finding relations between tables
