@@ -162,7 +162,53 @@ Products Table
 
 
 ## 5. Queries:
-**users Table**
+**create database**
+
+```SQL
+CREATE DATABASE db; 
+```
+<br>
+
+
+**create Table**
+
+```SQL
+/*  * on creating table you must create columns also otherwise it won't allow creating table
+    * there should be at least one primary key according to 1NF:in Database design section 
+    * try to choose the best fit DataType for your columns
+    * make sure that no column depend on another column in the table Revisit 3NF:in Database design section
+    *unsigned is put after the datatype not before
+    *if you don't want duplications in any column make it UNIQUE
+*/
+
+CREATE TABLE users (
+id int unsigned auto_increment primary key,
+firstname VARCHAR(200),
+last_name VARCHAR(200),
+age TINYINT
+); 
+```
+<br>
+
+**Updating table structure**
+
+```SQL
+/* adding column */
+ALTER TABLE users 
+ADD COLUMN email VARCHAR(200) UNIQUE;
+
+/*Changing Column*/
+ALTER TABLE users 
+CHANGE email e_mail VARCHAR(250);
+
+/* Removing column */
+ALTER TABLE users 
+DROP email;
+
+```
+<hr>
+
+[download users table](table/users.sql)
 
 | id  | first_name | last_name | age |
 | --- | ---------- | --------- | --- |
@@ -174,6 +220,57 @@ Products Table
 | 6   | mohamed    | ismail    | 35  |
 
 <br>
+
+**Inserting**
+
+```SQL
+INSERT INTO users 
+VALUES(7,'mostafa','ramadan',24);
+
+
+/*you can specifiy the columns to insert to*/
+INSERT INTO users (first_name,last_name,age)
+VALUES ('ahmed','zaki',25);
+```
+<br>
+
+**Updating**
+
+```SQL
+UPDATE users 
+SET first_name='mahmoud', second_name='zaki'
+WHERE id = 8;
+```
+
+<br>
+
+**Deleting**
+
+```SQL
+DELETE FROM users 
+WHERE id = 7 OR id = 8 ;
+```
+<br>
+
+**Selecting**
+
+```SQL
+SELECT * FROM users;
+```
+
+output 
+
+| id  | first_name | last_name | age |
+| --- | ---------- | --------- | --- |
+| 1   | ahmed      | ibrahim   | 24  |
+| 2   | mohamed    | reda      | 20  |
+| 3   | alaa       | mohamed   | 20  |
+| 4   | john       | michael   | 40  |
+| 5   | ahmed      | ali       | 31  |
+| 6   | mohamed    | ismail    | 35  |
+
+
+
 
 ```SQL
 /*          --- LIMIT  ---
