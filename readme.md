@@ -1,25 +1,23 @@
-# MYSQL  ( Relational Database )
+# MYSQL  ( Relational Database Management System )
 <img height="250px"  src="images/mysql2.png"/>
 <br><br>
 
-### DBMS : Database Management System
-    the technology of storing and retrieving users data 
-    with utmost efficiency for example MYSQL, PostegreSQL, 
-    SqlLite, MariaDb, SAP, Oracle ... and so on
-<br><br>
-1. [Storage_engines](#1-Storage_engines)
-2. [Data_Types](#2-data_types)
-3. [Foreign Key](#3-Foreign-Key) 
-4. [Relations](#4-Relations) 
+### Intro
+* > Mysql is a relational database management system that stores data in terms of tables and columns and set their relations with each other. what make it favouritable is that its **open source, very fast, reliable, scalable and easy to use**. its also frequently used with php language and supported on almost every shared hosting companies.
+
+### References:
+1. [Storage Engines](#1-storage-engines)
+2. [Data Types](#2-data-types)
+3. [Foreign Key](#3-foreign-key) 
+4. [Relations](#4-relations) 
 5. [Queries](#5-queries) 
-6. [Database Design](#6-Database-Design) 
-7. [SQL Injection](#7-SQL-Injection)
-
-
+6. [Database Design](#6-database-design) 
+7. [Usage with PHP](#7-usage-with-php)
+8. [SQL Injection](#8-sql-injection)
 
 <br>
 
-## 1. Storage_engines :
+### 1. Storage Engines
 
 > is what mysql uses to store, handle and retreive data and there are many supported .. you can see the supported one from "SHOW ENGINES" query
 
@@ -30,8 +28,8 @@ we can specifiy engine for every table to have different engine
     CREATE TABLE posts (column_name VARCHAR(200)) ENGINE=INNODB;
 ```
 
-### Some Different engines:
-* ####  MYISAM : 
+#### Some Different engines:
+* #####  MYISAM : 
 it supports full text searches index(take a phrase and match it with a column) ,Table level blocking which means it block table from any another query while inserting and updating, its great for site with low insert/update rate and a very high select rate 
 
 >Full Text searching can be enabled in InnoDB
@@ -46,7 +44,7 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
  
 ```
 
-* #### InnoDB :
+* ##### InnoDB :
   
     * its the default one now, and it has many features over myisam.
     * it uses row-level blocking.
@@ -62,9 +60,9 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
       * If we removed S1 then the record in activity which point to S1 will be removed also automatically 
 
 
-## 2. Data_Types
+### 2. Data Types
 
-* ###  Numerical :
+* ####  Numerical :
   * INT: Normal Sized Integer width up to 11 digits
   * INT(3): allocate memory for 3 bytes but inserting value which is bigger,SQL will try to get more memory from the system.
   * TinyInt:very small int -127 to 127
@@ -81,7 +79,7 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
          it can be put after any numerical datatype
 
 
-* ### String:
+* #### String:
   * CHAR: is a fixed length string
   * VARCHAR(length):Variable length of string with specific length
   * TEXT is good:
@@ -90,15 +88,15 @@ SELECT title FROM items WHERE match(title) Against ("+watch -smart" IN BOOLEAN M
     * If you select this column rarely and do not join on it.
      <br>Some examples of what TEXT is good for: Blog comments , Page Reviews , Content Description
 
-* ### Date and Time:
+* #### Date and Time:
   * Date: YYYY-MM-DD
   * TimeStamp: YYYY MM DD HH:MM:SS from 1970 to 2038 (best pracice)
   * DateTime: YYYY-MM-DD HH:MM:SS from 1000 to 9999
 
-## 3. Foreign Key:
+### 3. Foreign Key
 A column is dependent on another one if one value can be used to determine the value of another,in another meaning if one value in column1 changes it will lead to a change in the value in column 2 as long as column1 points to column2 
 
-### **Foreign Key in pracice**
+#### **Foreign Key in pracice**
 Adding foreign key to make products.category to point to categories.id
 
 Categories Table
@@ -119,46 +117,50 @@ Products Table
 |     | watch          |             | 50$   | 4        |       |              |
 |     | samsung phone  |             | 150$  | 1        |       |              |
 
-* ### adding index to products.category column
+* #### adding index to products.category column
    
     <img src="images/foreign_key_1.png" />
 
-* ### click on relation view
+* #### click on relation view
     
     <img src="images/foreign_key_2.png" />
 
-* ### make products.category column point to categories.id
+* #### make products.category column point to categories.id
 
     <img src="images/foreign_key_3.png" />
 
-* ### Restrict:
+* #### Restrict:
     means if we want to remove a category from the categories Table, it won't allow removal because there is a product pointing to it
 
-* ### Cascade:
+* #### Cascade:
      means if we want to remove a category from the categories Table, it will remove all the products pointing to this category
 
-* ### Null:
+* #### Null:
   means if we want to remove a category from the categories Table,it will reset the value of product.category which point to parent category with null
 
-* ### No actions:
+* #### No actions:
   means if we want to remove a category from the categories Table,nothing will happen in products table even if there are some pointing to parent category
 
 
-## 4. Relations:
+### 4. Relations:
 
-* ### one to many relation:
+* #### one to many relation:
     **one parent can have many child** <br><br>
     **for example one category(parent) can have many products(child),its like the implementaion above.**
+	**child(is the table that has a column refereing to parent table)
+	**posts(is the table that has a column called category_id refereing to category table
 <img src="images/one-to-many.png" />
 
 
-* ### one to one relation:
+* #### one to one relation:
     **one parent can have only one child** <br><br>
     **if for some reason you wanted that one category(parent) should have only one product(child), we can do that in implementation above but with little addition that we should product.category be unique, so that no category should ever be repeated**
+	**child(is the table that has a column refereing to parent table)
+	**posts(is the table that has a column called category_id refereing to category table
 <img src="images/one-to-one.png" />
 
 
-* ### many to many relation:
+* #### many to many relation:
   **one child can have many parent** <br><br>
 **if for some reason you wanted that one product(child) can have many categories(parent), implemetation now is much different, the implementation now is to create another table 'Product_categories' Table . this implementation is universal,in another meaning by playing with unique attribute for columns,we can change the relations from one to one, one to many, many to many**
 <img src="images/many-to-many.png" />
@@ -166,7 +168,7 @@ Products Table
 
 
 
-## 5. Queries:
+### 5. Queries:
 
 
 > For better experience,Do queries yourself in php_my_admin
@@ -456,7 +458,7 @@ HAVING COUNT(*)>1;
 
 
 
-## 6. Database Design
+### 6. Database Design
 
  **Normalization:**
  is the process of organizing the fields and tables to minimize redudancy and control dependency.
@@ -508,7 +510,7 @@ the fix is to create another table for category Table and make a foreign key bet
 | 3          | Lean Startup        | 3           |     |     | 3   | Books    | inspiring books          |
 | 4          | Toshiba L755        | 2           |     |     | 4   | PC       | personal computers       |
 
-* ### Data Integrity:
+* #### Data Integrity:
     is to make sure that database has the right design to store data to remove redundance 
     for example:
     users(table) -> id,name,mail,address (columns) ... (there shouldn't be two same mails in the table) ... so we make sure that mail column is unique
@@ -524,7 +526,7 @@ the fix is to create another table for category Table and make a foreign key bet
 
 
 
-* ### Common Design Mistakes
+* #### Common Design Mistakes
 
   * Tables with many field that don't relate to eachother
   * Too many tables with similar data
@@ -533,7 +535,7 @@ the fix is to create another table for category Table and make a foreign key bet
   * poor naming conventions
   * non-normalized data
 
-* ### Database Design Process:
+* #### Database Design Process:
   * define the purpose of the database, we want create db for website that will
     * sell products which can be categorized
     * create customer accounts
@@ -548,10 +550,148 @@ the fix is to create another table for category Table and make a foreign key bet
   
   * normalize the database by finding relations between tables
 
+### 7. Usage with PHP
 
+##### PDO Extension
+PDO (PHP data object) is a collection of php classes that communicate with many different SQL database via a single user interface.we can write and execute database queries with a single interface regardless of the particular database system we happen to be usin at the time
 
+>**Lets start a connection**
 
-## 7. SQL Injection
+the PDO constructor accepts a string argument called DNS (data source name) which have information about the type of database and database name and other info also accepts arguments of username and password for the database
+
+```php
+<?php
+//dns formatted as 'driver:key=value;key=value'
+    try{
+        $pdo = new PDO(
+            'mysql:host=localhost;dbname=books;port=3306;charset=utf8',
+            'root',
+            'password'
+        );
+    }catch(PDOException $e){
+        echo 'Database Connection Failed';
+        exit;
+    }
+```
+>**Prepared Statement**
+
+we have now a connection to database so we can use this connection to read and write to the database with sql statments
+
+A prepared statement is a PDOStatement instance. we get this instance with using prepare method on connection itself
+
+```php
+<?php
+    $sql = 'SELECT id FROM users WHERE email = :email AND id > :id';
+    $statement = $pdo->prepare($sql);
+
+    //filter_input and filter_var are helper functions in sanitizing and validating the variables
+    //it has many options such filter_input(INPUT_POST, 'email',FILTER_SANITIZE_EMAIL);
+    //filter_input(INPUT_POST, 'email',FILTER_VALIDATE_EMAIL);
+    $email = filter_input(INPUT_GET, 'email');
+
+    //binding data to statement, default bounded data is string
+    $statement->bindValue(':email', $email);
+
+    //this tells PDO that bounded data is integer
+    $statement->bindValue(':id', 1, PDO::PARAM_INT);
+```
+
+>**Execute Statement**
+
+we now have a prepared statement, and we are ready to execute sql queries against database. the execute() method on statment execute the sql query with any bounded data. if you are doing INSERT,UPDATE,DELETE invoke execute() and you are done, however if you need to get records from database you are going to use fetch(), fetchALL(), fetchColumn(), fetchObject() methods.
+
+```php
+<?php
+    /** 
+    /* SOME Ways of Fetching records from database
+    /* PDO::FETCH_ASSOC .. return associative array
+    /* PDO::FETCH_NUM   .. return a numeric array
+    /* PDO::FETCH_BOTH  .. return associative and numeric array
+    /* PDO::FETCH_OBJ   .. reutrn an object whose properities are columns names .. Bad for memory
+    **/
+
+    $statement->execute();
+
+    //fetch method will give the next row from result set so its helpful in iterations
+    while(($result = $statement->fetch(PDO::FETCH_ASSOC))!==false){
+        echo $result['id'];
+    }
+
+    //fetchAll will get all matches and set them in memory then iterate over them.
+    $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+    foreach($results as $result){
+        echo $result['id'];
+    }
+```
+>**Transactions**
+
+PDO extension also support extenstions. A transaction is a collection of sql queries that are either all executed successfully or not executed at all. Transactions encourage data consistency, safety and improve in performance.
+
+look at the following scenario,what if the query of withdrawing money is done successfully but on trying to deposit the money. an error happened any type of error .it may be server error, web application has gone down or script caused error. there is a big problem here as we can't track down this failed operation easily so a better approach is to link these both queries either executing together or failing together.
+
+```php
+<?php
+    /**
+    /* so withdraw from ahmed account done successfully
+    /* What if error happened executing the deposition to john account
+    */
+    $subtract_statement = $pdo->prepare('
+        update accounts
+        SET amount = amount - :amount
+        WHERE name=:name
+    ');
+
+    $add_statement = $pdo->prepare('
+        UPDATE accounts 
+        SET amount = amount + :amount 
+        WHERE name = :name
+    ');
+
+    //withdraw money from account 1
+    $subtract_statement->bindValue(':name',"ahmed");
+    $subtract_statement->bindValue(':amount',1000,PDO::PARAM_INT);
+    $subtract_statement->execute();
+
+    //deposit money into account 2
+    $add_statement->bindValue(':name', "John");
+    $add_statement->bindValue(':amount', 1000, PDO::PARAM_INT);
+    $add_statement->execute();
+```
+**Solution** 
+
+```php
+<?php
+    /**
+    /* Solution is to wrap the two queries executions around a transaction
+    */
+    $subtract_statement = $pdo->prepare('
+        update accounts
+        SET amount = amount - :amount
+        WHERE name=:name
+    ');
+
+    $add_statement = $pdo->prepare('
+        UPDATE accounts 
+        SET amount = amount + :amount 
+        WHERE name = :name
+    ');
+    
+    $pdo->beginTransaction();
+
+    //withdraw money from account 1
+    $subtract_statement->bindValue(':name',"ahmed");
+    $subtract_statement->bindValue(':amount',1000,PDO::PARAM_INT);
+    $subtract_statement->execute();
+
+    //deposit money into account 2
+    $add_statement->bindValue(':name', "John");
+    $add_statement->bindValue(':amount', 1000, PDO::PARAM_INT);
+    $add_statement->execute();
+
+    $pdo->commit();
+```
+
+### 8. SQL Injection
 
         sql injection is what attackers can use to get into your database 
         and read all the sensitive data inside and cause catastrophic data breach
